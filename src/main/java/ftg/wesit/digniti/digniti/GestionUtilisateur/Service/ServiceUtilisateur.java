@@ -75,6 +75,11 @@ public class ServiceUtilisateur implements MetierUtilisateur {
         utilisateur.getRoles().add(roles);
     }
 
+    @Override
+    public List<Utilisateur> findAllemail(String email) {
+        return daoUtilisateur.findAllemail(email);
+    }
+
 
     @Bean
     void addRole(){

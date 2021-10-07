@@ -14,4 +14,5 @@ public interface MetierUtilisateur {
     Roles findByRolename(String rolename);
     Roles save(Roles role);
     void addroleToUtilisateur(String rolename,String usename);
+    List<Utilisateur> findAllemail(String email);
 }

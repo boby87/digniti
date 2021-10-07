@@ -27,6 +27,10 @@ public class RestUtilisateur {
     Utilisateur getByUsername(@PathVariable String username){
         return metierUtilisateur.findByUsernameAndStatusIsTrue(username);
     }
+    @GetMapping("getBy/email/{email}")
+    List<Utilisateur> getByEmail(@PathVariable String email){
+        return metierUtilisateur.findAllemail(email);
+    }
     @PostMapping("register")
     Utilisateur registerUtilisateur(Utilisateur utilisateur){
         return metierUtilisateur.save(utilisateur);
