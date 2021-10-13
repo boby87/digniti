@@ -83,8 +83,11 @@ public class ServiceUtilisateur implements MetierUtilisateur {
 
     @Bean
     void addRole(){
-        save(new Roles(CONSTANTROLE.ADMIN));
-        save(new Roles(CONSTANTROLE.VISTITEUR));
+        if (daoRoles.findAll()==null){
+            save(new Roles(CONSTANTROLE.ADMIN));
+            save(new Roles(CONSTANTROLE.VISTITEUR));
+        }
+
     }
 
 }
