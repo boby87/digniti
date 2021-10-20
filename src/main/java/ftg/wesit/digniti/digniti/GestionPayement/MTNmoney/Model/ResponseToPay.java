@@ -5,6 +5,7 @@ public class ResponseToPay {
     private String currency;
     private String externalId;
     private PayeurInfos payer;
+    private PayeurInfos payee;
     private String payerMessage;
     private String payeeNote;
     private String status;
@@ -84,4 +85,11 @@ public class ResponseToPay {
         this.reason = reason;
     }
 
+    public PayeurInfos getPayee() {
+        return payee;
+    }
+
+    public void setPayee(PayeurInfos payee) {
+        this.payee = payee;
+    }
 }

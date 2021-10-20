@@ -20,7 +20,7 @@ import java.net.URI;
 import java.util.Base64;
 import java.util.UUID;
 
-@Service
+@Service("disbursementService")
 @Transactional
 public class ServiceSandboxDisbursement implements MetierCollection {
     HttpClient httpclient = HttpClients.createDefault();
@@ -151,13 +151,14 @@ public class ServiceSandboxDisbursement implements MetierCollection {
         try
         {
             URIBuilder builder = new URIBuilder("https://sandbox.momodeveloper.mtn.com/disbursement/v1_0/accountholder/msisdn/"+telephone+"/basicuserinfo");
-
+            originalInput = uuid + ":" + apikey.getApiKey();
+            String base64 = Base64.getEncoder().encodeToString(originalInput.getBytes());
 
             URI uri = builder.build();
             HttpGet request = new HttpGet(uri);
-            request.setHeader("Authorization", "");
-            request.setHeader("X-Target-Environment", "");
-            request.setHeader("Ocp-Apim-Subscription-Key", "{subscription key}");
+            request.setHeader("Authorization", "Basic " + base64);
+            request.setHeader("X-Target-Environment", "sandbox");
+            request.setHeader("Ocp-Apim-Subscription-Key", Ocp_Apim_Subscription);
 
 
             // Request body
@@ -182,13 +183,14 @@ public class ServiceSandboxDisbursement implements MetierCollection {
         try
         {
             URIBuilder builder = new URIBuilder("https://sandbox.momodeveloper.mtn.com/disbursement/v1_0/accountholder/msisdn/"+numero+"/active");
-
+            originalInput = uuid + ":" + apikey.getApiKey();
+            String base64 = Base64.getEncoder().encodeToString(originalInput.getBytes());
 
             URI uri = builder.build();
             HttpGet request = new HttpGet(uri);
-            request.setHeader("Authorization", "");
-            request.setHeader("X-Target-Environment", "");
-            request.setHeader("Ocp-Apim-Subscription-Key", "{subscription key}");
+            request.setHeader("Authorization", "Basic " + base64);
+            request.setHeader("X-Target-Environment", "sandbox");
+            request.setHeader("Ocp-Apim-Subscription-Key", Ocp_Apim_Subscription);
 
 
             // Request body
@@ -207,10 +209,7 @@ public class ServiceSandboxDisbursement implements MetierCollection {
         }
     }
 
-    @Override
-    public boolean check_count(String numero) {
-        return false;
-    }
+
 
     @Override
     public Balance getBalance() {
@@ -218,12 +217,14 @@ public class ServiceSandboxDisbursement implements MetierCollection {
         {
             URIBuilder builder = new URIBuilder("https://sandbox.momodeveloper.mtn.com/disbursement/v1_0/account/balance");
 
+            originalInput = uuid + ":" + apikey.getApiKey();
+            String base64 = Base64.getEncoder().encodeToString(originalInput.getBytes());
 
             URI uri = builder.build();
             HttpGet request = new HttpGet(uri);
-            request.setHeader("Authorization", "");
-            request.setHeader("X-Target-Environment", "");
-            request.setHeader("Ocp-Apim-Subscription-Key", "{subscription key}");
+            request.setHeader("Authorization", "Basic " + base64);
+            request.setHeader("X-Target-Environment", "sandbox");
+            request.setHeader("Ocp-Apim-Subscription-Key", Ocp_Apim_Subscription);
 
 
             // Request body
@@ -247,21 +248,25 @@ public class ServiceSandboxDisbursement implements MetierCollection {
     public void deliverynotification(String reference, String notification) {
         try
         {
-            URIBuilder builder = new URIBuilder("https://sandbox.momodeveloper.mtn.com/disbursement/v1_0/requesttopay/{referenceId}/deliverynotification");
-
+            URIBuilder builder = new URIBuilder("https://sandbox.momodeveloper.mtn.com/disbursement/v1_0/requesttopay/"+reference+"/deliverynotification");
+            originalInput = uuid + ":" + apikey.getApiKey();
+            String base64 = Base64.getEncoder().encodeToString(originalInput.getBytes());
 
             URI uri = builder.build();
             HttpPost request = new HttpPost(uri);
-            request.setHeader("notificationMessage", "");
-            request.setHeader("Language", "");
-            request.setHeader("Authorization", "");
-            request.setHeader("X-Target-Environment", "");
-            request.setHeader("Content-Type", "application/json");
-            request.setHeader("Ocp-Apim-Subscription-Key", "{subscription key}");
+            request.setHeader("notificationMessage", notification);
+            request.setHeader("Language", "fr");
 
 
+            request.setHeader("Authorization", "Basic " + base64);
+            request.setHeader("X-Target-Environment", "sandbox");
+            request.setHeader("Ocp-Apim-Subscription-Key", Ocp_Apim_Subscription);
+
+
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("notificationMessage", notification);
             // Request body
-            StringEntity reqEntity = new StringEntity("{body}");
+            StringEntity reqEntity = new StringEntity(jsonObject.toString());
             request.setEntity(reqEntity);
 
             HttpResponse response = httpclient.execute(request);
@@ -282,7 +287,7 @@ public class ServiceSandboxDisbursement implements MetierCollection {
     public ResponseToPay getstatus(String reference) {
         ResponseToPay responseToPay=new ResponseToPay();
         try {
-            URIBuilder builder = new URIBuilder("https://sandbox.momodeveloper.mtn.com/disbursement/v1_0/transfer/"+uuid.trim());
+            URIBuilder builder = new URIBuilder("https://sandbox.momodeveloper.mtn.com/disbursement/v1_0/transfer/"+reference);
 
 
             URI uri = builder.build();
@@ -317,17 +322,17 @@ public class ServiceSandboxDisbursement implements MetierCollection {
             HttpPost request = new HttpPost(uri);
             request.setHeader("Authorization", "Bearer " + token.getAccess_token());
             // request.setHeader("X-Callback-Url", "");
-            request.setHeader("X-Reference-Id", uuid);
+            request.setHeader("X-Reference-Id", reference);
             request.setHeader("X-Target-Environment", "sandbox");
             request.setHeader("Content-Type", "application/json");
             request.setHeader("Ocp-Apim-Subscription-Key", Ocp_Apim_Subscription);
             JSONObject jsonObject = new JSONObject();
             JSONObject jsonpayeur = new JSONObject();
             jsonpayeur.put("partyIdType", "MSISDN");
-            jsonpayeur.put("partyId", "237676012940");
-            jsonObject.put("amount", "500");
+            jsonpayeur.put("partyId", telephone);
+            jsonObject.put("amount", montant);
             jsonObject.put("currency", "EUR");
-            jsonObject.put("externalId", uuid);
+            jsonObject.put("externalId", reference);
             jsonObject.put("payee", jsonpayeur);
             jsonObject.put("payerMessage", "Fokou");
             jsonObject.put("payeeNote", "Test");
