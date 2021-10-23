@@ -11,6 +11,8 @@ public class ResponseToPay {
     private String status;
     private String financialTransactionId;
     private String reason;
+    private String code;
+    private String message;
 
 
     public String getAmount() {
@@ -91,5 +93,21 @@ public class ResponseToPay {
 
     public void setPayee(PayeurInfos payee) {
         this.payee = payee;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 }

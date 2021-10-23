@@ -1,6 +1,6 @@
 package ftg.wesit.digniti.digniti.GestionPayement.MTNmoney.RestController;
 
-import ftg.wesit.digniti.digniti.GestionPayement.MTNmoney.Metier.MetierCollection;
+import ftg.wesit.digniti.digniti.GestionPayement.MTNmoney.Metier.MetierMOMO;
 import ftg.wesit.digniti.digniti.GestionPayement.MTNmoney.Model.Balance;
 import ftg.wesit.digniti.digniti.GestionPayement.MTNmoney.Model.Basicuserinfo;
 import ftg.wesit.digniti.digniti.GestionPayement.MTNmoney.Model.ResponseToPay;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 public class Disbursement {
     @Qualifier("disbursementService")
     @Autowired
-    MetierCollection metierCollection;
+    MetierMOMO metierCollection;
 
     @GetMapping("requesttopay/{reference}/{telephone}/{montant}")
     boolean requesttopay(@PathVariable String reference,@PathVariable String telephone,@PathVariable String montant){

@@ -1,7 +1,7 @@
 package ftg.wesit.digniti.digniti.GestionPayement.MTNmoney.Disbursement.ImplMetier;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import ftg.wesit.digniti.digniti.GestionPayement.MTNmoney.Metier.MetierCollection;
+import ftg.wesit.digniti.digniti.GestionPayement.MTNmoney.Metier.MetierMOMO;
 import ftg.wesit.digniti.digniti.GestionPayement.MTNmoney.Model.*;
 import net.minidev.json.JSONObject;
 import org.apache.http.HttpEntity;
@@ -22,10 +22,10 @@ import java.util.UUID;
 
 @Service("disbursementService")
 @Transactional
-public class ServiceSandboxDisbursement implements MetierCollection {
+public class ServiceSandboxDisbursement implements MetierMOMO {
     HttpClient httpclient = HttpClients.createDefault();
-    String originalInput = "176bcdba-58c3-4638-a571-67648e3c99ef:d5aa1fd6969944be94cd2c453fbc0517";//apiuse:apikey
-    String Ocp_Apim_Subscription = "2f7bab001c4448898353ba270d150156";
+    String originalInput ;//apiuse:apikey
+    String Ocp_Apim_Subscription = "3017cac4e6ef431fb6576f878f5eb394";
     String uuid;
     Apikey apikey;
     Token token;

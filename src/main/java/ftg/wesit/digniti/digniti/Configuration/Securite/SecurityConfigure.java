@@ -42,7 +42,7 @@ public class SecurityConfigure extends WebSecurityConfigurerAdapter {
         //ici on va definir les droits acces et les filtres
 
         http.csrf().disable()
-                .authorizeRequests().antMatchers("/login/**", "/register/**", "/v2/api-docs", "/swagger-resources/**",
+                .authorizeRequests().antMatchers("/login/**", "/register/**","/api/**","/beneficiare/**", "/v2/api-docs", "/swagger-resources/**",
                 "/swagger-ui.html/**").permitAll()
                 .and()
                 .addFilter(new JWTauthentificationFilter(authenticationManager()))

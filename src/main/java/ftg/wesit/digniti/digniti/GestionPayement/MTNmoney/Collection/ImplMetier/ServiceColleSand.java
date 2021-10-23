@@ -2,7 +2,8 @@ package ftg.wesit.digniti.digniti.GestionPayement.MTNmoney.Collection.ImplMetier
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import ftg.wesit.digniti.digniti.GestionPayement.MTNmoney.Metier.MetierCollection;
+import ftg.wesit.digniti.digniti.Configuration.GestionErreurs.ErrorMessages;
+import ftg.wesit.digniti.digniti.GestionPayement.MTNmoney.Metier.MetierMOMO;
 import ftg.wesit.digniti.digniti.GestionPayement.MTNmoney.Model.*;
 import net.minidev.json.JSONObject;
 import org.apache.http.HttpEntity;
@@ -14,6 +15,7 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,11 +25,12 @@ import java.util.UUID;
 
 @Service("collectionservice")
 @Transactional
-public class ServiceColleSand implements MetierCollection {
+public class ServiceColleSand implements MetierMOMO {
     HttpClient httpclient = HttpClients.createDefault();
-    String originalInput;//apiuse:apikey
-    String Ocp_Apim_Subscription = "7020f827a2d948659aa151e3982b4e4e";
+    String originalInput = "44ae52a3-381d-40c6-a552-ef2601f8594a0:04dfbecba6264cf4991ef9aad8cyuh97";//apiuse:apikey
+    String Ocp_Apim_Subscription = "653ad23293b54a56b06d4ae7ba353561";
     String uuid;
+    String urlMtn="https://proxy.momoapi.mtn.com/collection/";
     Apikey apikey;
     Token token;
 
@@ -117,10 +120,10 @@ public class ServiceColleSand implements MetierCollection {
 
 
     void getToken() {
-        getApi();
+      //  getApi();
         try {
-            URIBuilder builder = new URIBuilder("https://sandbox.momodeveloper.mtn.com/collection/token/");
-            originalInput = uuid + ":" + apikey.getApiKey();
+            URIBuilder builder = new URIBuilder(urlMtn+"token/");
+//            originalInput = uuid + ":" + apikey.getApiKey();
             String base64 = Base64.getEncoder().encodeToString(originalInput.getBytes());
             URI uri = builder.build();
             HttpPost request = new HttpPost(uri);
@@ -129,8 +132,6 @@ public class ServiceColleSand implements MetierCollection {
 
 
             // Request body
-            StringEntity reqEntity = new StringEntity("{body}");
-            request.setEntity(reqEntity);
 
             HttpResponse response = httpclient.execute(request);
             HttpEntity entity = response.getEntity();
@@ -152,17 +153,17 @@ public class ServiceColleSand implements MetierCollection {
 
     @Override
     public Basicuserinfo basicuserinfo(String telephone) {
-        HttpClient httpclient = HttpClients.createDefault();
+       getToken();
 
         try
         {
-            URIBuilder builder = new URIBuilder("https://sandbox.momodeveloper.mtn.com/collection/v1_0/accountholder/msisdn/"+telephone+"/basicuserinfo");
+            URIBuilder builder = new URIBuilder(urlMtn+"v1_0/accountholder/msisdn/"+telephone+"/basicuserinfo");
 
 
             URI uri = builder.build();
             HttpGet request = new HttpGet(uri);
             request.setHeader("Authorization", "Bearer " + token.getAccess_token());
-            request.setHeader("X-Target-Environment", "sandbox");
+            request.setHeader("X-Target-Environment", "mtncameroon");
             request.setHeader("Ocp-Apim-Subscription-Key", Ocp_Apim_Subscription);
 
 
@@ -188,17 +189,17 @@ public class ServiceColleSand implements MetierCollection {
 
     @Override
     public void getInfoHolder(String numero) {
-        HttpClient httpclient = HttpClients.createDefault();
+       getToken();
 
         try
         {
-            URIBuilder builder = new URIBuilder("https://sandbox.momodeveloper.mtn.com/collection/v1_0/accountholder/MSISDN/"+numero+"/active");
+            URIBuilder builder = new URIBuilder(urlMtn+"v1_0/accountholder/MSISDN/"+numero+"/active");
 
 
             URI uri = builder.build();
             HttpGet request = new HttpGet(uri);
             request.setHeader("Authorization", "Bearer " + token.getAccess_token());
-            request.setHeader("X-Target-Environment", "sandbox");
+            request.setHeader("X-Target-Environment", "mtncameroon");
             request.setHeader("Ocp-Apim-Subscription-Key", Ocp_Apim_Subscription);
 
 
@@ -221,17 +222,17 @@ public class ServiceColleSand implements MetierCollection {
 
     @Override
     public Balance getBalance() {
-        HttpClient httpclient = HttpClients.createDefault();
-
+        getToken();
+        Balance balance=new Balance();
         try
         {
-            URIBuilder builder = new URIBuilder("https://sandbox.momodeveloper.mtn.com/collection/v1_0/account/balance");
+            URIBuilder builder = new URIBuilder(urlMtn+"v1_0/account/balance");
 
 
             URI uri = builder.build();
             HttpGet request = new HttpGet(uri);
             request.setHeader("Authorization", "Bearer " + token.getAccess_token());
-            request.setHeader("X-Target-Environment", "sandbox");
+            request.setHeader("X-Target-Environment", "mtncameroon");
             request.setHeader("Ocp-Apim-Subscription-Key", Ocp_Apim_Subscription);
 
 
@@ -239,9 +240,14 @@ public class ServiceColleSand implements MetierCollection {
 
             HttpResponse response = httpclient.execute(request);
             HttpEntity entity = response.getEntity();
-
+            System.out.println("alll/*--*------------------------------*****************************************");
+            System.out.println(response);
             if (entity != null)
             {
+                System.out.println("*******************/*--*------------------------------*****************************************");
+                System.out.println(response);
+                balance = new ObjectMapper().readValue(EntityUtils.toString(entity), Balance.class);
+
                 System.out.println(EntityUtils.toString(entity));
             }
         }
@@ -249,16 +255,15 @@ public class ServiceColleSand implements MetierCollection {
         {
             System.out.println(e.getMessage());
         }
-        return null;
+        return balance;
     }
 
     @Override
     public void deliverynotification(String reference, String notification) {
-        HttpClient httpclient = HttpClients.createDefault();
-
+        getToken();
         try
         {
-            URIBuilder builder = new URIBuilder("https://sandbox.momodeveloper.mtn.com/collection/v1_0/requesttopay/"+reference+"/deliverynotification");
+            URIBuilder builder = new URIBuilder(urlMtn+"v1_0/requesttopay/"+reference+"/deliverynotification");
 
 
             URI uri = builder.build();
@@ -267,7 +272,7 @@ public class ServiceColleSand implements MetierCollection {
             request.setHeader("Language", "fr");
             request.setHeader("Content-Type", "application/json");
             request.setHeader("Authorization", "Bearer " + token.getAccess_token());
-            request.setHeader("X-Target-Environment", "sandbox");
+            request.setHeader("X-Target-Environment", "mtncameroon");
             request.setHeader("Ocp-Apim-Subscription-Key", Ocp_Apim_Subscription);
 
             JSONObject jsonObject = new JSONObject();
@@ -294,13 +299,13 @@ public class ServiceColleSand implements MetierCollection {
     public ResponseToPay getstatus(String reference) {
         ResponseToPay responseToPay=new ResponseToPay();
         try {
-            URIBuilder builder = new URIBuilder("https://sandbox.momodeveloper.mtn.com/collection/v1_0/requesttopay/"+reference);
+            URIBuilder builder = new URIBuilder(urlMtn+"v1_0/requesttopay/"+reference);
 
 
             URI uri = builder.build();
             HttpGet request = new HttpGet(uri);
             request.setHeader("Authorization", "Bearer " + token.getAccess_token());
-            request.setHeader("X-Target-Environment", "sandbox");
+            request.setHeader("X-Target-Environment", "mtncameroon");
             request.setHeader("Ocp-Apim-Subscription-Key", Ocp_Apim_Subscription);
 
 
@@ -311,6 +316,9 @@ public class ServiceColleSand implements MetierCollection {
 
             if (entity != null) {
                  responseToPay = new ObjectMapper().readValue(EntityUtils.toString(entity), ResponseToPay.class);
+                 if (responseToPay==null){
+                     throw new ErrorMessages("Lopération a echoué",HttpStatus.NOT_FOUND);
+                 }
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -321,8 +329,9 @@ public class ServiceColleSand implements MetierCollection {
     @Override
     public boolean requesttopay(String reference, String telephone, String montant) {
         getToken();
+        boolean status=false;
         try {
-            URIBuilder builder = new URIBuilder("https://sandbox.momodeveloper.mtn.com/collection/v1_0/requesttopay");
+            URIBuilder builder = new URIBuilder(urlMtn+"v1_0/requesttopay");
 
 
             URI uri = builder.build();
@@ -330,7 +339,7 @@ public class ServiceColleSand implements MetierCollection {
             request.setHeader("Authorization", "Bearer " + token.getAccess_token());
             // request.setHeader("X-Callback-Url", "");
             request.setHeader("X-Reference-Id", reference);
-            request.setHeader("X-Target-Environment", "sandbox");
+            request.setHeader("X-Target-Environment", "mtncameroon");
             request.setHeader("Content-Type", "application/json");
             request.setHeader("Ocp-Apim-Subscription-Key", Ocp_Apim_Subscription);
             JSONObject jsonObject = new JSONObject();
@@ -338,7 +347,7 @@ public class ServiceColleSand implements MetierCollection {
             jsonpayeur.put("partyIdType", "MSISDN");
             jsonpayeur.put("partyId", telephone);
             jsonObject.put("amount", montant);
-            jsonObject.put("currency", "EUR");
+            jsonObject.put("currency", "XAF");
             jsonObject.put("externalId", reference);
             jsonObject.put("payer", jsonpayeur);
             jsonObject.put("payerMessage", "Fokou");
@@ -352,12 +361,18 @@ public class ServiceColleSand implements MetierCollection {
             HttpEntity entity = response.getEntity();
 
             if (entity != null) {
-                System.out.println(jsonObject);
-                System.out.println(response);
+                System.out.println(response.toString());
+                if (response.toString().contains("202 Accepted")){
+                    status=true;
+                }else if (response.toString().contains("500 Server Error")){
+                    throw new ErrorMessages("500 Server Error", HttpStatus.CONFLICT);
+
+
+                }
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-        return true;
+        return status;
     }
 }
