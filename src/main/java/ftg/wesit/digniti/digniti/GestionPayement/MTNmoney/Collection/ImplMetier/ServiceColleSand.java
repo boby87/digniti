@@ -27,8 +27,8 @@ import java.util.UUID;
 @Transactional
 public class ServiceColleSand implements MetierMOMO {
     HttpClient httpclient = HttpClients.createDefault();
-    String originalInput = "44ae52a3-381d-40c6-a552-ef2601f8594a0:04dfbecba6264cf4991ef9aad8cyuh97";//apiuse:apikey
-    String Ocp_Apim_Subscription = "653ad23293b54a56b06d4ae7ba353561";
+    String originalInput = "44ae52a3-381d-40c6-a552-ef2601fd4aa0:04dfbecba6264cf4991ef9aad8ce8b97";//apiuse:apikey
+    String Ocp_Apim_Subscription = "653ad23293b54a56b06d4ae7ba353141";
     String uuid;
     String urlMtn="https://proxy.momoapi.mtn.com/collection/";
     Apikey apikey;

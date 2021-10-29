@@ -3,18 +3,16 @@ package ftg.wesit.digniti.digniti.GestionPayement.Stripe.ImplMetier;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.PaymentIntent;
-import com.stripe.model.Price;
 import com.stripe.model.checkout.Session;
-import com.stripe.param.PriceCreateParams;
 import com.stripe.param.checkout.SessionCreateParams;
-import ftg.wesit.digniti.digniti.GestionPayement.Stripe.Metier.PaymentMetier;
+import ftg.wesit.digniti.digniti.GestionPayement.Stripe.Metier.MetierStripe;
 import ftg.wesit.digniti.digniti.GestionPayement.Stripe.Model.Paymentstripe;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
 @Service
-public class ImplementPayment implements PaymentMetier {
+public class ImplementStripe implements MetierStripe {
    // @Value("${Stripe.apiKey}")
     String apiKey="sk_test_51JkzwsKeetERrAwwaPtcTJEp4KlrKmwmoPOHO1UEGOGYlj1wKEVVvGjkvoIy7qm69XkH3nyLaiPaxfIOoCIogOzq006zJk8dHj";
 
@@ -70,10 +68,10 @@ public class ImplementPayment implements PaymentMetier {
         Session session = Session.create(params);
         Map<String, String> responseData = new HashMap<>();
         // We get the sessionId and we putted inside the response data you can get more info from the session object
-
+System.out.println(session.toJson());
 
         // We can return only the sessionId as a String
-        return session.toJson();
+        return session.getUrl();
     }
 
 }

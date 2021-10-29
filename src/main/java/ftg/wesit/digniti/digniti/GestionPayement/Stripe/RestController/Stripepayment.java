@@ -1,7 +1,7 @@
 package ftg.wesit.digniti.digniti.GestionPayement.Stripe.RestController;
 
 import com.stripe.exception.StripeException;
-import ftg.wesit.digniti.digniti.GestionPayement.Stripe.Metier.PaymentMetier;
+import ftg.wesit.digniti.digniti.GestionPayement.Stripe.Metier.MetierStripe;
 import ftg.wesit.digniti.digniti.GestionPayement.Stripe.Model.Paymentstripe;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -12,14 +12,14 @@ import org.springframework.web.bind.annotation.*;
 public class Stripepayment {
 
     @Autowired
-    PaymentMetier paymentMetier;
+    MetierStripe metierStripe;
 
     @GetMapping("payement/{montant}")
     Paymentstripe do_payment(@PathVariable int montant) throws StripeException {
-        return paymentMetier.do_payment(montant);
+        return metierStripe.do_payment(montant);
     }
     @PostMapping("payement/")
     String payment(@RequestBody Paymentstripe paymentstripe) throws StripeException {
-        return paymentMetier.paymentWithCheckoutPage(paymentstripe);
+        return metierStripe.paymentWithCheckoutPage(paymentstripe);
     }
 }

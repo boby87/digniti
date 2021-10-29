@@ -8,6 +8,7 @@ public class Responsetransaction {
     private String montant;
     private String modepayment;
 
+
     public String getStatus() {
         return status;
     }

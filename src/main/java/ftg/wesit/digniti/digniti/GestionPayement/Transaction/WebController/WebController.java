@@ -1,5 +1,6 @@
 package ftg.wesit.digniti.digniti.GestionPayement.Transaction.WebController;
 
+import ftg.wesit.digniti.digniti.GestionPayement.Orangemoney.Model.Callbackorange;
 import ftg.wesit.digniti.digniti.GestionPayement.Transaction.Metier.MetierTransaction;
 import ftg.wesit.digniti.digniti.GestionPayement.Transaction.Model.Responsetransaction;
 import ftg.wesit.digniti.digniti.GestionPayement.Transaction.Model.TransactionCollection;
@@ -46,5 +47,10 @@ public class WebController {
     @GetMapping("collection/status/{reference}")
     Responsetransaction get_status_collection(@PathVariable String reference){
         return metierTransaction.get_status_collection(reference);
+    }
+
+    @PutMapping("callback")
+    void callback_orange(@RequestBody Callbackorange callbackorange){
+       System.out.println(callbackorange.toString());
     }
 }

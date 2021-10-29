@@ -1,6 +1,7 @@
 package ftg.wesit.digniti.digniti.GestionPayement.Transaction.Service;
 
 
+import com.stripe.exception.StripeException;
 import ftg.wesit.digniti.digniti.Configuration.GestionErreurs.ErrorMessages;
 import ftg.wesit.digniti.digniti.GestionPayement.CONSTANTE;
 import ftg.wesit.digniti.digniti.GestionPayement.MTNmoney.Metier.MetierMOMO;
@@ -8,6 +9,8 @@ import ftg.wesit.digniti.digniti.GestionPayement.MTNmoney.Model.ResponseToPay;
 import ftg.wesit.digniti.digniti.GestionPayement.Orangemoney.Metier.MetierOrangeMoney;
 import ftg.wesit.digniti.digniti.GestionPayement.Orangemoney.Model.Orangemoney;
 import ftg.wesit.digniti.digniti.GestionPayement.Orangemoney.Model.ResultatOrange;
+import ftg.wesit.digniti.digniti.GestionPayement.Stripe.Metier.MetierStripe;
+import ftg.wesit.digniti.digniti.GestionPayement.Stripe.Model.Paymentstripe;
 import ftg.wesit.digniti.digniti.GestionPayement.Transaction.Dao.DaoTransDisbursement;
 import ftg.wesit.digniti.digniti.GestionPayement.Transaction.Dao.DaotransCollection;
 import ftg.wesit.digniti.digniti.GestionPayement.Transaction.Metier.MetierTransaction;
@@ -45,6 +48,8 @@ public class ServiceTransaction implements MetierTransaction {
     DaoTransDisbursement daoTransDisbursement;
     @Autowired
     MetierBeneficiare metierBeneficiare;
+    @Autowired
+    MetierStripe metierStripe;
 
     static SecureRandom rnd = new SecureRandom();
 
@@ -52,6 +57,7 @@ public class ServiceTransaction implements MetierTransaction {
     @Override
     public Responsetransaction do_collection(TransactionCollection model) {
         Responsetransaction responsetransaction = new Responsetransaction();
+        responsetransaction.setModepayment(model.getModepayment());
         if (model.getModepayment().equals(CONSTANTE.MOMO)) {
             model.setPhone(give_forma_contact(model.getPhone()));
             model.setReference(UUID.randomUUID().toString());
@@ -69,6 +75,20 @@ public class ServiceTransaction implements MetierTransaction {
             model.setStatus("PENDING");
             model.setUrl_direction(resultatOrange.getPayment_url());
             responsetransaction.setUrl_direction(resultatOrange.getPayment_url());
+        }else  if (model.getModepayment().equals(CONSTANTE.STRIPE)){
+            Paymentstripe paymentstripe=new Paymentstripe();
+            paymentstripe.setAmount(model.getMontant());
+            paymentstripe.setCurrency("USD");
+            paymentstripe.setQuantity(1);
+            paymentstripe.setSuccessUrl("http://localhost:4200/success");
+            paymentstripe.setCancelUrl("http://digipay.cm:9007");
+            try {
+                String resul=metierStripe.paymentWithCheckoutPage(paymentstripe);
+                System.out.println(resul);
+                responsetransaction.setUrl_direction(resul);
+            } catch (StripeException e) {
+                e.printStackTrace();
+            }
         }
       responsetransaction.setModepayment(model.getModepayment());
         daotransaction.save(model);
