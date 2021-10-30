@@ -13,6 +13,8 @@ public class TransactionCollection {
     private String status;
     @Column(unique = true)
     private String reference;
+    private String commentaire;
+    @Column(columnDefinition = "text")
     private String url_direction;
 
     public String getId() {
@@ -69,5 +71,13 @@ public class TransactionCollection {
 
     public void setUrl_direction(String url_direction) {
         this.url_direction = url_direction;
+    }
+
+    public String getCommentaire() {
+        return commentaire;
+    }
+
+    public void setCommentaire(String commentaire) {
+        this.commentaire = commentaire;
     }
 }

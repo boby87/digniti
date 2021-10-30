@@ -1,13 +1,13 @@
 package ftg.wesit.digniti.digniti.GestionPayement.Orangemoney.Model;
 
 public class Orangemoney {
-    private String merchant_key="2358963";
+    private String merchant_key="3d5b5889";
     private String currency="XAF";
     private String order_id;
     private int amount;
-    private String return_url="http://digniti/callback";
-    private String cancel_url="http://digniti/callback";
-    private String notif_url="http://digniti/callback";
+    private String return_url="http://192.168.8.109:4200/success";
+    private String cancel_url="http://digipay.cm";
+    private String notif_url="http://192.168.8.109:8080/api/callback";
     private String lang="fr";
     private String reference;
 

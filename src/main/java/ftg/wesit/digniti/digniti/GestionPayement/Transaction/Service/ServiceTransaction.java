@@ -9,6 +9,9 @@ import ftg.wesit.digniti.digniti.GestionPayement.MTNmoney.Model.ResponseToPay;
 import ftg.wesit.digniti.digniti.GestionPayement.Orangemoney.Metier.MetierOrangeMoney;
 import ftg.wesit.digniti.digniti.GestionPayement.Orangemoney.Model.Orangemoney;
 import ftg.wesit.digniti.digniti.GestionPayement.Orangemoney.Model.ResultatOrange;
+import ftg.wesit.digniti.digniti.GestionPayement.Paypal.Metier.MetierPaypal;
+import ftg.wesit.digniti.digniti.GestionPayement.Paypal.Model.Order;
+import ftg.wesit.digniti.digniti.GestionPayement.Paypal.Model.ResponsePaypal;
 import ftg.wesit.digniti.digniti.GestionPayement.Stripe.Metier.MetierStripe;
 import ftg.wesit.digniti.digniti.GestionPayement.Stripe.Model.Paymentstripe;
 import ftg.wesit.digniti.digniti.GestionPayement.Transaction.Dao.DaoTransDisbursement;
@@ -50,6 +53,8 @@ public class ServiceTransaction implements MetierTransaction {
     MetierBeneficiare metierBeneficiare;
     @Autowired
     MetierStripe metierStripe;
+    @Autowired
+    MetierPaypal metierPaypal;
 
     static SecureRandom rnd = new SecureRandom();
 
@@ -89,6 +94,19 @@ public class ServiceTransaction implements MetierTransaction {
             } catch (StripeException e) {
                 e.printStackTrace();
             }
+        }else  if (model.getModepayment().equals(CONSTANTE.PAYPAL)) {
+            Order order=new Order(model.getMontant(), model.getCommentaire());
+            ResponsePaypal responsePaypal=metierPaypal.createPayment(order);
+            model.setReference(responsePaypal.getId());
+            double mount= Double.parseDouble(responsePaypal.getAmount());
+            model.setMontant((int) mount);
+            model.setUrl_direction(responsePaypal.getUrl_return());
+            model.setStatus(responsePaypal.getStatus());
+            responsetransaction.setUrl_direction(responsePaypal.getUrl_return());
+            responsetransaction.setMontant(responsePaypal.getAmount());
+            responsetransaction.setReference(responsePaypal.getId());
+            responsetransaction.setStatus(responsePaypal.getStatus());
+
         }
       responsetransaction.setModepayment(model.getModepayment());
         daotransaction.save(model);
